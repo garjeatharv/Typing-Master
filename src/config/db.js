@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { getEnv, isServerlessRuntime, isLocalDevelopment } = require('./env');
+const { getEnv, isServerlessRuntime } = require('./env');
 
 function mustUseRemoteDatabase() {
   return getEnv('NODE_ENV') === 'production' || isServerlessRuntime();
@@ -49,7 +49,8 @@ function getMongoUri() {
     return uri;
   }
 
-  if (isLocalDevelopment()) {
+  // Local machine (not Netlify/production): default Mongo even without MONGODB_URI in .env
+  if (!mustUseRemoteDatabase()) {
     return 'mongodb://127.0.0.1:27017/LoginFormPractice';
   }
 

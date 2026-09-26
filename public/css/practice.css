@@ -3,113 +3,115 @@
 }
 
 .typing-surface--preview {
-  cursor: default;
+  cursor: pointer;
 }
 
 .typing-surface--preview:focus-visible {
   box-shadow: none;
 }
 
-.practice-page__header-row {
+.practice-page {
+  min-height: calc(100vh - 3.25rem);
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+  flex-direction: column;
 }
 
-.practice-page__header-row h1 {
-  margin: 0;
-  font-size: clamp(1.6rem, 4vw, 2.2rem);
-  font-style: normal;
+.practice-shell {
+  width: 100%;
+  max-width: 1050px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 2.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
-.filter-toggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 42px;
-  height: 42px;
-  padding: 0;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: var(--accent-soft);
-  color: var(--text);
-  cursor: pointer;
+.practice-config-details {
   flex-shrink: 0;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  margin-bottom: 1.5rem;
 }
 
-.filter-toggle:hover:not(:disabled) {
-  border-color: var(--border-strong);
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.filter-toggle.is-active {
-  border-color: var(--border-strong);
-  background: rgba(255, 255, 255, 0.12);
-}
-
-.filter-toggle:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
-}
-
-.filter-toggle__icon {
-  display: block;
-}
-
-.practice-filters-panel {
-  margin-top: 0.5rem;
-  padding: 0.85rem;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: rgba(0, 0, 0, 0.2);
-}
-
-.practice-page--filtering .practice-content {
+.practice-config-details__summary {
   display: none;
 }
 
-.practice-settings__actions {
-  margin-bottom: 0.75rem;
+.practice-config {
+  transition: opacity 0.2s ease;
 }
 
-.apply-filters-btn {
+.practice-page--running .practice-config {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.practice-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  min-height: min(52vh, 520px);
+  min-width: 0;
   width: 100%;
-  margin-left: 0;
 }
 
+.live-stats {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.5rem 2rem;
+  margin: 0 0 1.25rem;
+  font-family: 'Roboto Mono', 'Consolas', monospace;
+  font-size: clamp(1.35rem, 3vw, 2rem);
+  color: var(--muted);
+}
+
+.live-stats__label {
+  color: var(--muted);
+  font-size: 0.85em;
+  margin-right: 0.35rem;
+}
+
+.live-stats strong {
+  color: var(--text);
+  font-weight: 600;
+}
 
 .quote-viewport {
-  --quote-line-height: 1.55;
-  --quote-visible-lines: 4;
-  --quote-font-size: clamp(1.05rem, 2.8vw, 1.35rem);
-  height: calc(var(--quote-visible-lines) * var(--quote-line-height) * var(--quote-font-size));
+  --quote-line-height: 1.65;
+  --quote-visible-lines: 3;
+  --quote-font-size: clamp(1.35rem, 3.2vw, 1.65rem);
+  --quote-clip-pad: 0.65em;
+  width: 100%;
+  max-width: 100%;
+  height: calc(
+    var(--quote-visible-lines) * var(--quote-line-height) * var(--quote-font-size) + var(--quote-clip-pad)
+  );
   overflow: hidden;
-  margin: 0.75rem 0 0.35rem;
-  padding: 0.35rem 0.15rem;
-  border-radius: 10px;
-  background: rgba(0, 0, 0, 0.18);
-  border: 1px solid var(--border);
+  margin: 0 0 1.15rem;
+  padding: 0.15em 0 0.55em;
+  box-sizing: border-box;
 }
 
 .typing-surface {
   height: 100%;
+  width: 100%;
+  max-width: 100%;
   outline: none;
   cursor: text;
-  border-radius: 8px;
-}
-
-.typing-surface:focus-visible {
-  box-shadow: inset 0 0 0 1px var(--border-strong);
+  overflow: hidden;
 }
 
 .quote-track {
   font-family: 'Roboto Mono', 'Consolas', 'Courier New', monospace;
   font-size: var(--quote-font-size);
-  font-weight: 500;
+  font-weight: 400;
   line-height: var(--quote-line-height);
-  word-break: break-word;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: break-word;
   transition: transform 0.18s ease-out;
   will-change: transform;
 }
@@ -133,26 +135,26 @@
 .char--wrong {
   color: var(--typing-wrong);
   text-decoration: underline;
-  text-decoration-color: rgba(168, 106, 106, 0.55);
+  text-decoration-color: rgba(202, 71, 84, 0.55);
 }
 
 .char--active.char--error-flash {
   color: var(--error-text);
-  background: rgba(168, 106, 106, 0.15);
+  background: rgba(202, 71, 84, 0.12);
   border-radius: 2px;
 }
 
 .typing-surface--error {
-  box-shadow: inset 0 0 0 1px rgba(168, 106, 106, 0.35);
+  box-shadow: inset 0 0 0 1px rgba(202, 71, 84, 0.35);
 }
 
 .char--active::before {
   content: '';
   position: absolute;
   left: 0;
-  bottom: 0.05em;
+  bottom: 0.12em;
   width: 2px;
-  height: 1.15em;
+  height: 1em;
   background: var(--accent-hover);
   border-radius: 1px;
   animation: caret-blink 1s step-end infinite;
@@ -166,9 +168,14 @@
 
 .message {
   min-height: 1.25rem;
-  margin: 0.35rem 0 0;
-  font-size: clamp(0.9rem, 2.2vw, 1rem);
+  margin: 1rem 0 0;
+  text-align: center;
+  font-size: 0.95rem;
   color: var(--muted);
+}
+
+.message strong {
+  color: var(--text);
 }
 
 .practice-actions {
@@ -176,7 +183,8 @@
   flex-wrap: wrap;
   gap: 0.65rem;
   justify-content: center;
-  margin-top: 0.5rem;
+  margin-top: 1.25rem;
+  padding-bottom: 0.5rem;
 }
 
 .practice-actions .btn-primary,
@@ -184,67 +192,95 @@
   min-width: 140px;
 }
 
-.live-stats {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.75rem;
-  margin: 1rem 0;
-}
-
-.live-stats__item {
-  padding: 0.75rem;
-  border-radius: 10px;
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid var(--border);
-}
-
-.live-stats__label {
-  display: block;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--muted);
-  margin-bottom: 0.25rem;
-}
-
-.practice-page.container {
-  width: min(920px, 100% - 1.5rem);
-  margin: 1rem auto 2rem;
-  padding: clamp(1rem, 3vw, 2rem);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-}
-
-.instructions {
-  margin: 0.5rem 0 0;
-  color: var(--muted);
-  font-size: clamp(0.95rem, 2.5vw, 1.05rem);
-  line-height: 1.5;
-}
-
 .hide {
   display: none;
 }
 
-@media (max-width: 640px) {
-  .live-stats {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.4rem;
+.typing-surface:focus-visible {
+  outline: none;
+}
+
+@media (max-width: 768px) {
+  .practice-config-details {
+    margin-bottom: 0.75rem;
   }
 
-  .live-stats__item {
-    padding: 0.5rem;
+  .practice-config-details__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    color: var(--text);
+    font-weight: 600;
+    font-size: 0.9rem;
+    list-style: none;
+    user-select: none;
+  }
+
+  .practice-config-details__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .practice-config-details__summary::after {
+    content: '+';
+    color: var(--muted);
+    font-size: 1.1rem;
+    font-weight: 400;
+  }
+
+  .practice-config-details[open] .practice-config-details__summary::after {
+    content: '−';
+  }
+
+  .practice-config-details[open] .practice-config-details__summary {
+    margin-bottom: 0.65rem;
+  }
+
+  .practice-shell {
+    padding-top: 0.65rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .practice-content {
+    min-height: 0;
+    justify-content: flex-start;
   }
 
   .quote-viewport {
     --quote-visible-lines: 3;
+    --quote-font-size: clamp(1rem, 4.2vw, 1.25rem);
   }
 
-  .practice-page.container {
-    width: calc(100% - 1rem);
-    margin-top: 0.75rem;
-    padding: 0.85rem;
+  .live-stats {
+    gap: 0.75rem 1rem;
+    font-size: 1.05rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .message {
+    font-size: 0.85rem;
+    margin-top: 0.65rem;
+  }
+
+  .practice-actions .btn-primary,
+  .practice-actions .btn-secondary {
+    min-width: 0;
+    width: 100%;
+    max-width: 280px;
+  }
+}
+
+@media (max-width: 480px) {
+  .practice-shell {
+    padding-inline: 0.75rem;
+  }
+
+  .live-stats {
+    font-size: 0.95rem;
   }
 }

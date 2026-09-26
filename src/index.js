@@ -1,15 +1,15 @@
-const { isServerlessRuntime, isLocalDevelopment, getProjectRoot } = require('./config/env');
-
-if (!isServerlessRuntime()) {
-  require('dotenv').config();
-}
-
-const express = require('express');
 const path = require('path');
+
+// Load .env from project root before any config reads process.env (cwd-independent).
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
+
+const { isServerlessRuntime, isLocalDevelopment, getProjectRoot } = require('./config/env');
+const express = require('express');
 const fs = require('fs');
 const cookieParser = require('cookie-parser');
 
 const hbs = require('hbs');
+const { userInitials } = require('./utils/userInitials');
 
 const connectDB = require('./config/db');
 const { ensureWordsSeeded } = require('./services/wordSeedService');
@@ -39,7 +39,7 @@ function registerAllPartials() {
 
 const partialsReady = registerAllPartials();
 
-if (isLocalDevelopment()) {
+if (isLocalDevelopment() && require.main === module) {
   let reloadTimer;
   try {
     fs.watch(partialsPath, { recursive: true }, () => {
@@ -84,6 +84,7 @@ app.use(cookieParser());
 app.set('view engine', 'hbs');
 app.set('views', path.join(projectRoot, 'templates'));
 hbs.registerHelper('eq', (a, b) => a === b);
+hbs.registerHelper('userInitials', (name) => userInitials(name));
 app.use(express.static(path.join(projectRoot, 'public')));
 
 app.use(async (req, res, next) => {

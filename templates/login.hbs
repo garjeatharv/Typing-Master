@@ -8,18 +8,43 @@
   <link rel="stylesheet" href="/css/app.css">
   <link rel="stylesheet" href="/login.css">
 </head>
-<body>
-  <main class="auth-container">
-    <div class="auth-card">
-      <h1>Log in</h1>
-      <p class="auth-subtitle">Continue your typing progress</p>
-      <form id="login-form" novalidate>
-        <input type="text" name="name" placeholder="Username" autocomplete="username" required>
-        <input type="password" name="password" placeholder="Password" autocomplete="current-password" required>
-        <input type="submit" value="Log in">
-      </form>
-      <p class="auth-footer"><a href="/signup">Create an account</a></p>
-    </div>
+<body class="auth-page">
+  <main class="auth-split">
+    <section class="auth-split__form" aria-labelledby="login-heading">
+      <div class="auth-card">
+        <a class="auth-card__brand" href="/">TypingMaster</a>
+        <p class="auth-card__eyebrow">Welcome back</p>
+        <h1 id="login-heading">Log in</h1>
+        <p class="auth-subtitle">Sign in to continue tests and view your stats.</p>
+        <form id="login-form" novalidate>
+          <label class="auth-field">
+            <span class="auth-field__label">Username</span>
+            <input type="text" name="name" placeholder="Your username" autocomplete="username" required>
+          </label>
+          <label class="auth-field">
+            <span class="auth-field__label">Password</span>
+            <input type="password" name="password" placeholder="Your password" autocomplete="current-password" required>
+          </label>
+          <input type="submit" value="Log in">
+        </form>
+        <p class="auth-footer">
+          New here?
+          <a href="/signup">Create an account</a>
+        </p>
+      </div>
+    </section>
+
+    <aside class="auth-split__intro" aria-label="About TypingMaster">
+      <div class="auth-intro">
+        <a class="auth-intro__brand" href="/">TypingMaster</a>
+        <p class="auth-intro__lead">
+          Practice typing with live WPM and accuracy, timed and word-count tests, and a personal dashboard that remembers your progress.
+        </p>
+        <p class="auth-intro__note">
+          Create a free account in under a minute — your sessions and stats stay tied to your profile.
+        </p>
+      </div>
+    </aside>
   </main>
   <script src="/js/core/http.js"></script>
   <script src="/login.js"></script>

@@ -34,8 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const submitBtn = form.querySelector('input[type="submit"]');
-    const original = submitBtn.value;
-    submitBtn.value = 'Creating account…';
+    submitBtn.classList.add('is-loading');
     submitBtn.disabled = true;
 
     try {
@@ -47,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       errorDiv.textContent = err.message || 'Signup failed';
       errorDiv.style.display = 'block';
-      submitBtn.value = original;
+      submitBtn.classList.remove('is-loading');
       submitBtn.disabled = false;
     }
   });

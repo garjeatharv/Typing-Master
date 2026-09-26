@@ -6,20 +6,45 @@
   <title>{{ pageTitle }} · TypingMaster</title>
   <link rel="stylesheet" href="/css/theme.css">
   <link rel="stylesheet" href="/css/app.css">
-  <link rel="stylesheet" href="/signup.css">
+  <link rel="stylesheet" href="/login.css">
 </head>
-<body>
-  <main class="auth-container">
-    <div class="auth-card">
-      <h1>Sign up</h1>
-      <p class="auth-subtitle">Create an account to save your stats</p>
-      <form id="signup-form" novalidate>
-        <input type="text" name="name" placeholder="Username" autocomplete="username" required>
-        <input type="password" name="password" placeholder="Password" autocomplete="new-password" required>
-        <input type="submit" value="Create account">
-      </form>
-      <p class="auth-footer"><a href="/login">Already have an account?</a></p>
-    </div>
+<body class="auth-page">
+  <main class="auth-split">
+    <section class="auth-split__form" aria-labelledby="signup-heading">
+      <div class="auth-card">
+        <a class="auth-card__brand" href="/">TypingMaster</a>
+        <p class="auth-card__eyebrow">Get started</p>
+        <h1 id="signup-heading">Sign up</h1>
+        <p class="auth-subtitle">Create an account to save sessions and track your progress.</p>
+        <form id="signup-form" novalidate>
+          <label class="auth-field">
+            <span class="auth-field__label">Username</span>
+            <input type="text" name="name" placeholder="Choose a username" autocomplete="username" required>
+          </label>
+          <label class="auth-field">
+            <span class="auth-field__label">Password</span>
+            <input type="password" name="password" placeholder="Choose a password" autocomplete="new-password" required>
+          </label>
+          <input type="submit" value="Create account">
+        </form>
+        <p class="auth-footer">
+          Already have an account?
+          <a href="/login">Log in</a>
+        </p>
+      </div>
+    </section>
+
+    <aside class="auth-split__intro" aria-label="About TypingMaster">
+      <div class="auth-intro">
+        <a class="auth-intro__brand" href="/">TypingMaster</a>
+        <p class="auth-intro__lead">
+          Practice typing with live WPM and accuracy, timed and word-count tests, and a personal dashboard that remembers your progress.
+        </p>
+        <p class="auth-intro__note">
+          Create a free account in under a minute — your sessions and stats stay tied to your profile.
+        </p>
+      </div>
+    </aside>
   </main>
   <script src="/js/core/http.js"></script>
   <script src="/signup.js"></script>

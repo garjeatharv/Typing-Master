@@ -14,11 +14,11 @@
     <h1>Your progress</h1>
     <p class="stats-intro">Track improvement across sessions. Hover chart points for details.</p>
 
-    <div class="stats-grid" id="stats-summary">
-      <div class="stat-card"><span class="stat-label">Sessions</span><span class="stat-value" id="stat-sessions">—</span></div>
-      <div class="stat-card"><span class="stat-label">Best WPM</span><span class="stat-value" id="stat-best-wpm">—</span></div>
-      <div class="stat-card"><span class="stat-label">Avg WPM</span><span class="stat-value" id="stat-avg-wpm">—</span></div>
-      <div class="stat-card"><span class="stat-label">Avg accuracy</span><span class="stat-value" id="stat-avg-accuracy">—</span></div>
+    <div class="stats-grid is-loading" id="stats-summary" aria-busy="true">
+      <div class="stat-card"><span class="stat-label">Sessions</span><span class="stat-value shimmer shimmer--stat" id="stat-sessions" aria-hidden="true">&nbsp;</span></div>
+      <div class="stat-card"><span class="stat-label">Best WPM</span><span class="stat-value shimmer shimmer--stat" id="stat-best-wpm" aria-hidden="true">&nbsp;</span></div>
+      <div class="stat-card"><span class="stat-label">Avg WPM</span><span class="stat-value shimmer shimmer--stat" id="stat-avg-wpm" aria-hidden="true">&nbsp;</span></div>
+      <div class="stat-card"><span class="stat-label">Avg accuracy</span><span class="stat-value shimmer shimmer--stat" id="stat-avg-accuracy" aria-hidden="true">&nbsp;</span></div>
     </div>
 
     <section class="stats-chart-section" aria-labelledby="recent-heading">
@@ -27,7 +27,7 @@
         <p class="stats-chart-hint">WPM trend · hover for full result</p>
       </div>
       <div class="session-chart-shell">
-        <div id="session-chart" class="session-chart" role="img" aria-label="WPM trend for recent typing tests"></div>
+        <div id="session-chart" class="session-chart shimmer shimmer--chart" role="img" aria-label="WPM trend for recent typing tests" aria-busy="true"></div>
         <div id="session-chart-tooltip" class="session-chart-tooltip" hidden role="tooltip"></div>
       </div>
       <div class="table-wrap">
@@ -42,8 +42,10 @@
               <th>Words</th>
             </tr>
           </thead>
-          <tbody id="sessions-body">
-            <tr><td colspan="6" class="empty-row">Loading…</td></tr>
+          <tbody id="sessions-body" aria-busy="true">
+            <tr class="skeleton-row"><td><span class="shimmer shimmer--cell"></span></td><td><span class="shimmer shimmer--cell"></span></td><td><span class="shimmer shimmer--cell"></span></td><td><span class="shimmer shimmer--cell"></span></td><td><span class="shimmer shimmer--cell"></span></td><td><span class="shimmer shimmer--cell"></span></td></tr>
+            <tr class="skeleton-row"><td><span class="shimmer shimmer--cell"></span></td><td><span class="shimmer shimmer--cell"></span></td><td><span class="shimmer shimmer--cell"></span></td><td><span class="shimmer shimmer--cell"></span></td><td><span class="shimmer shimmer--cell"></span></td><td><span class="shimmer shimmer--cell"></span></td></tr>
+            <tr class="skeleton-row"><td><span class="shimmer shimmer--cell"></span></td><td><span class="shimmer shimmer--cell"></span></td><td><span class="shimmer shimmer--cell"></span></td><td><span class="shimmer shimmer--cell"></span></td><td><span class="shimmer shimmer--cell"></span></td><td><span class="shimmer shimmer--cell"></span></td></tr>
           </tbody>
         </table>
       </div>

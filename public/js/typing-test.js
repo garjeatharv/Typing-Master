@@ -7,8 +7,6 @@
   const startBtn = document.getElementById('start');
   const restartBtn = document.getElementById('restart');
   const applyFiltersBtn = document.getElementById('apply-filters');
-  const filterToggleBtn = document.getElementById('filter-toggle');
-  const filtersPanel = document.getElementById('practice-filters-panel');
   const practicePage = document.getElementById('practice-page');
   const liveTime = document.getElementById('live-time');
   const liveWpm = document.getElementById('live-wpm');
@@ -73,10 +71,12 @@
 
   function setRunControls(state) {
     sessionState = state;
+    if (practicePage) {
+      practicePage.classList.toggle('practice-page--running', state === 'running');
+    }
     if (state === 'running') {
       startBtn.hidden = true;
       restartBtn.hidden = true;
-      setFiltersOpen(false);
       updateFilterToggleState();
       return;
     }
@@ -97,21 +97,11 @@
   }
 
   function setFilterToggleEnabled(enabled) {
-    if (filterToggleBtn) filterToggleBtn.disabled = !enabled;
+    if (applyFiltersBtn) applyFiltersBtn.disabled = !enabled;
   }
 
-  function setFiltersOpen(open) {
-    if (open && !canChangeFilters()) return;
-
-    if (practicePage) {
-      practicePage.classList.toggle('practice-page--filtering', open);
-    }
-    if (filtersPanel) filtersPanel.hidden = !open;
-    if (filterToggleBtn) {
-      filterToggleBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
-      filterToggleBtn.setAttribute('aria-label', open ? 'Close filters' : 'Open filters');
-      filterToggleBtn.classList.toggle('is-active', open);
-    }
+  function setFiltersOpen() {
+    /* settings stay visible; no overlay panel */
   }
 
   function updateFilterToggleState() {
@@ -123,7 +113,7 @@
   }
 
   function escapeHtml(char) {
-    if (char === ' ') return '\u00a0';
+    if (char === ' ') return ' ';
     return char
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
@@ -170,9 +160,21 @@
     const trackStyle = getComputedStyle(quoteElement);
     const lineHeight = parseFloat(trackStyle.lineHeight) || 28;
     const viewportHeight = quoteViewport.clientHeight;
-    const maxScroll = Math.max(0, quoteElement.scrollHeight - viewportHeight);
-    const wordTop = active.offsetTop;
-    let translateY = wordTop - lineHeight;
+    const edgePad = 6;
+    const maxScroll = Math.max(0, quoteElement.scrollHeight - viewportHeight + edgePad);
+    const lineTop = active.offsetTop;
+    const lineBottom = lineTop + lineHeight;
+
+    let translateY = lineTop - lineHeight;
+
+    if (lineBottom - translateY > viewportHeight - edgePad) {
+      translateY = lineBottom - viewportHeight + edgePad;
+    }
+
+    if (!quoteElement.querySelector('.char--active') && charIndex === 0) {
+      translateY = 0;
+    }
+
     translateY = Math.max(0, Math.min(translateY, maxScroll));
     quoteElement.style.transform = `translateY(-${translateY}px)`;
   }
@@ -209,12 +211,30 @@
     liveAccuracy.textContent = '100';
   }
 
+  function showQuoteLoading() {
+    quoteElement.innerHTML =
+      '<div class="quote-shimmer" aria-hidden="true">' +
+      '<span class="shimmer shimmer--line"></span>'.repeat(4) +
+      '</div>';
+    quoteElement.classList.remove('quote-track--idle');
+    startBtn.disabled = true;
+    messageElement.textContent = '';
+    messageElement.setAttribute('aria-busy', 'true');
+  }
+
+  function clearQuoteLoading() {
+    messageElement.removeAttribute('aria-busy');
+    if (sessionState === 'idle' || sessionState === 'finished') {
+      startBtn.disabled = false;
+    }
+  }
+
   async function loadPreviewWords() {
     if (!canChangeFilters()) return;
 
     const config = syncConfigFromSettings();
     if (applyFiltersBtn) applyFiltersBtn.disabled = true;
-    messageElement.textContent = 'Loading words…';
+    showQuoteLoading();
 
     try {
       const fetchedWords = await fetchWords(config);
@@ -229,10 +249,12 @@
       stream = buildStream();
       renderPreview();
       setRunControls('idle');
-      messageElement.textContent = 'Press Start when ready, or open filters to change words.';
+      messageElement.textContent = 'Press start or click in the text area when ready.';
     } catch (err) {
+      quoteElement.innerHTML = '';
       messageElement.textContent = err.message || 'Failed to load words.';
     } finally {
+      clearQuoteLoading();
       if (applyFiltersBtn) applyFiltersBtn.disabled = false;
       settings.setInteractive(true);
     }
@@ -311,6 +333,8 @@
     messageElement.innerHTML =
       `<strong>${reason}</strong> · WPM: <strong>${wpm}</strong> · ` +
       `Accuracy: <strong>${accuracy}%</strong> · Words: <strong>${stats.completedWords}</strong>`;
+
+    updateQuoteScroll();
 
     await saveSession({
       mode: testMode,
@@ -402,6 +426,10 @@
   typingSurface.addEventListener('click', () => {
     if (typingSurface.dataset.active === 'true' && !finished) {
       typingSurface.focus();
+      return;
+    }
+    if (sessionState === 'idle') {
+      startTestFromIdle();
     }
   });
 
@@ -412,29 +440,19 @@
   if (applyFiltersBtn) {
     applyFiltersBtn.addEventListener('click', async () => {
       await loadPreviewWords();
-      if (stream.length) setFiltersOpen(false);
-    });
-  }
-
-  if (filterToggleBtn) {
-    filterToggleBtn.addEventListener('click', () => {
-      const willOpen = !practicePage.classList.contains('practice-page--filtering');
-      if (willOpen) {
-        setFiltersOpen(true);
-        return;
-      }
-      setFiltersOpen(false);
     });
   }
 
   restartBtn.addEventListener('click', () => {
-    setFiltersOpen(false);
     loadPreviewWords();
   });
 
   function beginTest() {
-    setFiltersOpen(false);
     syncConfigFromSettings();
+    const configDetails = document.getElementById('practice-config-details');
+    if (configDetails && window.matchMedia('(max-width: 768px)').matches) {
+      configDetails.removeAttribute('open');
+    }
     resetTypingProgress();
     finished = false;
     renderQuote(true);
@@ -445,15 +463,35 @@
     typingSurface.focus();
   }
 
-  startBtn.addEventListener('click', async () => {
+  async function startTestFromIdle() {
+    if (sessionState === 'running') return;
     if (!stream.length) {
       await loadPreviewWords();
       if (!stream.length) return;
     }
     beginTest();
+  }
+
+  startBtn.addEventListener('click', () => {
+    startTestFromIdle();
   });
 
+  function syncConfigDetailsForViewport() {
+    const configDetails = document.getElementById('practice-config-details');
+    if (!configDetails) return;
+    if (window.matchMedia('(min-width: 769px)').matches) {
+      configDetails.setAttribute('open', '');
+    }
+  }
+
   function boot() {
+    const configDetails = document.getElementById('practice-config-details');
+    if (configDetails) {
+      if (window.matchMedia('(max-width: 768px)').matches) {
+        configDetails.removeAttribute('open');
+      }
+      window.addEventListener('resize', syncConfigDetailsForViewport);
+    }
     updateFilterToggleState();
     loadPreviewWords();
   }

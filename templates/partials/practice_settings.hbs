@@ -1,27 +1,29 @@
 <section class="practice-settings" id="practice-settings" aria-label="Test settings">
-  <div class="practice-settings__actions">
-    <button type="button" id="apply-filters" class="btn-primary apply-filters-btn">Apply & show text</button>
-  </div>
-  <div class="practice-settings__grid">
-    {{> components/mode_selector }}
-    {{> components/typing_behavior_selector }}
-    {{> components/word_count_control }}
-    {{> components/category_selector }}
-    <div class="settings-block settings-block--content-options" data-component="content-options">
-      <div class="content-options__inline" role="group" aria-label="Text content">
-        <label class="content-options__item">
-          <input type="checkbox" id="toggleLowercase" class="content-options__check">
-          <span class="content-options__label">lowercase</span>
-        </label>
-        <label class="content-options__item">
-          <input type="checkbox" id="toggleNumbers" class="content-options__check">
-          <span class="content-options__label">Numbers</span>
-        </label>
-        <label class="content-options__item">
-          <input type="checkbox" id="toggleSymbols" class="content-options__check">
-          <span class="content-options__label">symbols</span>
-        </label>
+  <div class="practice-settings__toolbar">
+    <div class="practice-settings__row practice-settings__row--modes">
+      {{> components/mode_selector }}
+      {{> components/word_count_control }}
+    </div>
+    <div class="practice-settings__row practice-settings__row--meta">
+      {{> components/category_selector }}
+      {{> components/typing_behavior_selector }}
+      <div class="settings-block settings-block--content-options settings-block--inline" data-component="content-options">
+        <div class="content-options__inline" role="group" aria-label="Text content">
+          <label class="content-options__item">
+            <input type="checkbox" id="toggleLowercase" class="content-options__check">
+            <span class="content-options__label">lowercase</span>
+          </label>
+          <label class="content-options__item">
+            <input type="checkbox" id="toggleNumbers" class="content-options__check">
+            <span class="content-options__label">numbers</span>
+          </label>
+          <label class="content-options__item">
+            <input type="checkbox" id="toggleSymbols" class="content-options__check">
+            <span class="content-options__label">symbols</span>
+          </label>
+        </div>
       </div>
+      <button type="button" id="apply-filters" class="btn-practice btn-practice--apply" title="Load words with these settings">↻</button>
     </div>
   </div>
 </section>

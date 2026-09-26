@@ -8,6 +8,55 @@ document.addEventListener('DOMContentLoaded', async () => {
   let currentPage = 0;
   let totalSessions = 0;
 
+  const summaryIds = ['stat-sessions', 'stat-best-wpm', 'stat-avg-wpm', 'stat-avg-accuracy'];
+  const statsSummary = document.getElementById('stats-summary');
+
+  function skeletonTableHtml(rows = 5) {
+    const row = `<tr class="skeleton-row">${'<td><span class="shimmer shimmer--cell"></span></td>'.repeat(6)}</tr>`;
+    return row.repeat(rows);
+  }
+
+  function setSummaryLoading(loading) {
+    if (statsSummary) {
+      statsSummary.classList.toggle('is-loading', loading);
+      statsSummary.setAttribute('aria-busy', loading ? 'true' : 'false');
+    }
+    summaryIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.toggle('shimmer', loading);
+      el.classList.toggle('shimmer--stat', loading);
+      el.setAttribute('aria-hidden', loading ? 'true' : 'false');
+      if (loading) el.textContent = '\u00a0';
+    });
+  }
+
+  function setChartLoading(loading) {
+    if (!chartRoot) return;
+    if (loading) {
+      chartRoot.innerHTML = '';
+      chartRoot.classList.add('shimmer', 'shimmer--chart');
+      chartRoot.setAttribute('aria-busy', 'true');
+      return;
+    }
+    chartRoot.classList.remove('shimmer', 'shimmer--chart');
+    chartRoot.removeAttribute('aria-busy');
+  }
+
+  function setTableLoading(loading) {
+    if (!sessionsBody) return;
+    sessionsBody.setAttribute('aria-busy', loading ? 'true' : 'false');
+    if (loading) sessionsBody.innerHTML = skeletonTableHtml();
+  }
+
+  function setStatValue(id, text) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('shimmer', 'shimmer--stat');
+    el.removeAttribute('aria-hidden');
+    el.textContent = text;
+  }
+
   function renderTableRows(sessions) {
     if (!sessions.length) {
       sessionsBody.innerHTML =
@@ -50,6 +99,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   async function loadSessionsPage(page) {
+    setTableLoading(true);
     const skip = page * PAGE_SIZE;
     const listRes = await TM.request(`/api/sessions?limit=${PAGE_SIZE}&skip=${skip}`);
     totalSessions = listRes.data.total || 0;
@@ -73,19 +123,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  setSummaryLoading(true);
+  setChartLoading(true);
+  setTableLoading(true);
+
   try {
     const statsRes = await TM.request('/api/sessions/stats');
     const stats = statsRes.data;
 
-    document.getElementById('stat-sessions').textContent = stats.totalSessions;
-    document.getElementById('stat-best-wpm').textContent = stats.bestWpm || '0';
-    document.getElementById('stat-avg-wpm').textContent = stats.avgWpm || '0';
-    document.getElementById('stat-avg-accuracy').textContent = `${stats.avgAccuracy || 0}%`;
+    setSummaryLoading(false);
+    setStatValue('stat-sessions', stats.totalSessions);
+    setStatValue('stat-best-wpm', stats.bestWpm || '0');
+    setStatValue('stat-avg-wpm', stats.avgWpm || '0');
+    setStatValue('stat-avg-accuracy', `${stats.avgAccuracy || 0}%`);
 
     const chartRes = await TM.request('/api/sessions?limit=15');
     const chartSessions = chartRes.data.sessions || [];
 
     if (!stats.totalSessions) {
+      setChartLoading(false);
       if (chartRoot) {
         chartRoot.innerHTML = '<p class="session-chart__empty">No sessions yet. Complete a test on the practice page.</p>';
       }
@@ -95,14 +151,19 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
+    setChartLoading(false);
     if (chartRoot && chartSessions.length) {
       new TM.SessionChart(chartRoot, chartTooltip, chartSessions);
     }
 
     await loadSessionsPage(0);
   } catch (err) {
+    setSummaryLoading(false);
+    setChartLoading(false);
+    summaryIds.forEach((id) => setStatValue(id, '—'));
     if (chartRoot) chartRoot.innerHTML = `<p class="session-chart__empty">${err.message}</p>`;
     sessionsBody.innerHTML = `<tr><td colspan="6" class="empty-row">${err.message}</td></tr>`;
+    sessionsBody.setAttribute('aria-busy', 'false');
     if (paginationEl) paginationEl.hidden = true;
   }
 });

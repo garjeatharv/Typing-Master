@@ -22,8 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const submitBtn = form.querySelector('input[type="submit"]');
-    const original = submitBtn.value;
-    submitBtn.value = 'Connecting…';
+    submitBtn.classList.add('is-loading');
     submitBtn.disabled = true;
 
     try {
@@ -35,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       errorDiv.textContent = err.message || 'Invalid username or password';
       errorDiv.style.display = 'block';
-      submitBtn.value = original;
+      submitBtn.classList.remove('is-loading');
       submitBtn.disabled = false;
     }
   });

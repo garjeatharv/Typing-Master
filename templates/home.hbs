@@ -11,36 +11,20 @@
 </head>
 <body>
   {{> app_nav }}
-  <main class="practice-page container" id="practice-page">
-    <header class="practice-page__header">
-      <div class="practice-page__header-row">
-        <h1>Practice</h1>
-        <button
-          type="button"
-          id="filter-toggle"
-          class="filter-toggle"
-          aria-label="Open filters"
-          aria-expanded="false"
-          aria-controls="practice-filters-panel"
-        >
-          <svg class="filter-toggle__icon" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path fill="currentColor" d="M4 6h16v2H4V6zm3 5h10v2H7v-2zm4 5h2v2h-2v-2z"/>
-          </svg>
-        </button>
-      </div>
-      <p class="instructions" id="instructions">Type on the text below. Use the filter control to change words.</p>
-    </header>
+  <main class="practice-page" id="practice-page">
+    <div class="practice-shell">
+      <details class="practice-config-details" id="practice-config-details" open>
+        <summary class="practice-config-details__summary">Test settings</summary>
+        <div class="practice-config" id="practice-config">
+          {{> practice_settings }}
+        </div>
+      </details>
 
-    <div id="practice-filters-panel" class="practice-filters-panel" hidden>
-      {{> practice_settings }}
-    </div>
-
-    <div class="practice-content" id="practice-content">
-      <section class="practice-stage" id="practice-stage">
+      <div class="practice-content" id="practice-content">
         <div class="live-stats live-stats--hidden" id="live-stats" aria-live="polite">
-          <div class="live-stats__item"><span class="live-stats__label">Time</span><strong id="live-time">0:00</strong></div>
-          <div class="live-stats__item"><span class="live-stats__label">WPM</span><strong id="live-wpm">0</strong></div>
-          <div class="live-stats__item"><span class="live-stats__label">Accuracy</span><strong id="live-accuracy">100</strong>%</div>
+          <span class="live-stats__item"><span class="live-stats__label">Time</span> <strong id="live-time">0:00</strong></span>
+          <span class="live-stats__item"><span class="live-stats__label">WPM</span> <strong id="live-wpm">0</strong></span>
+          <span class="live-stats__item"><span class="live-stats__label">Acc</span> <strong id="live-accuracy">100</strong>%</span>
         </div>
 
         <div class="quote-viewport" id="quote-viewport" aria-label="Words to type">
@@ -50,13 +34,13 @@
         </div>
 
         <p id="message" class="message" role="status"></p>
-      </section>
 
-      <div class="practice-actions">
-        <button id="start" type="button" class="btn-primary">
-          Start test<span class="shortcut-hint shortcut-hint--btn" aria-label="Shortcut Control Enter">Ctrl+Enter</span>
-        </button>
-        <button id="restart" type="button" class="btn-secondary" hidden>Try again</button>
+        <div class="practice-actions">
+          <button id="start" type="button" class="btn-primary">
+            Start test<span class="visually-hidden"> — shortcut Control Enter</span>
+          </button>
+          <button id="restart" type="button" class="btn-secondary" hidden>Try again</button>
+        </div>
       </div>
     </div>
   </main>

@@ -1,20 +1,23 @@
 .stats-page.container {
-  width: min(960px, 100% - 1.5rem);
-  margin: 1rem auto 2.5rem;
-  padding: clamp(1.25rem, 3vw, 2rem);
-  background: var(--surface, #2a2a2a);
-  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
-  border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  width: min(1050px, 100% - 2rem);
+  margin: 0 auto;
+  padding: 1.25rem 0 2.5rem;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .stats-page h1 {
   margin-top: 0;
   margin-bottom: 0.35rem;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 800;
+  color: var(--text);
 }
 
 .stats-intro {
-  color: #bdbdbd;
+  color: var(--muted);
   margin-bottom: 1.5rem;
 }
 
@@ -26,15 +29,15 @@
 }
 
 .stat-card {
-  background: #333;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 1rem;
 }
 
 .stat-label {
   display: block;
-  color: #bdbdbd;
+  color: var(--muted);
   font-size: 0.9rem;
 }
 
@@ -43,30 +46,32 @@
   font-size: 1.75rem;
   font-weight: 800;
   margin-top: 0.35rem;
+  color: var(--text);
 }
 
 .table-wrap {
   overflow-x: auto;
 }
 
-.sessions-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #333;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
 .sessions-table th,
 .sessions-table td {
   padding: 0.75rem 0.85rem;
   text-align: left;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--border);
+}
+
+.sessions-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface-raised);
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
 }
 
 .sessions-table th {
-  background: #222;
-  color: #ddd;
+  background: var(--surface);
+  color: var(--muted);
   font-weight: 600;
 }
 
@@ -228,9 +233,9 @@
 
 @media (max-width: 640px) {
   .stats-page.container {
-    width: calc(100% - 1rem);
-    margin: 0.75rem auto 1.5rem;
-    padding: 1rem 1rem 1.25rem;
+    width: 100%;
+    margin: 0 auto 1.5rem;
+    padding: 0.75rem 0.75rem 1.25rem;
   }
 
   .session-chart-tooltip {
