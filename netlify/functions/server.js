@@ -5,7 +5,10 @@ let server;
 let initError;
 
 function configurationHelpPage(error) {
-  const isMissingEnv = error.code === 'MISSING_ENV' || error.code === 'MISSING_MONGODB_URI';
+  const isMissingEnv =
+    error.code === 'MISSING_ENV' ||
+    error.code === 'MISSING_MONGODB_URI' ||
+    error.code === 'INVALID_MONGODB_URI';
   const isMongo = error.name === 'MongooseServerSelectionError';
 
   const title = isMissingEnv
@@ -45,10 +48,10 @@ function configurationHelpPage(error) {
       <li>Netlify → <strong>Site configuration → Environment variables</strong>:
         <ul>
           <li><code>MONGODB_URI</code> = your Atlas URI (replace <code>&lt;password&gt;</code>)</li>
-          <li><code>JWT_SECRET</code> = long random string</li>
-          <li><code>NODE_ENV</code> = <code>production</code></li>
+          <li><code>JWT_SECRET</code> = long random string (not copied from this repo)</li>
         </ul>
       </li>
+      <li>Scope: set both variables for <strong>All scopes</strong> (or at least Production + Functions).</li>
       <li><strong>Deploys → Trigger deploy</strong> (required after changing env vars).</li>
     </ol>
     <p>Word lists seed automatically on first successful connection.</p>

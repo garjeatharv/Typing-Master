@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const { getEnv } = require('../config/env');
 
 const protect = async (req, res, next) => {
   let token;
@@ -25,7 +26,7 @@ const protect = async (req, res, next) => {
 
   try {
     // Verify the token using secret key
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'typingmastersecretkey');
+    const decoded = jwt.verify(token, getEnv('JWT_SECRET') || 'typingmastersecretkey');
 
     // Find the user by ID and exclude password field
     req.user = await User.findById(decoded.id).select('-password');

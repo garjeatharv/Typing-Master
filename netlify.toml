@@ -11,6 +11,7 @@
 
 [functions]
   node_bundler = "esbuild"
+  # Do not inline runtime secrets at build time (see src/config/env.js)
   external_node_modules = [
     "express",
     "hbs",

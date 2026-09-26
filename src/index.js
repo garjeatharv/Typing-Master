@@ -1,4 +1,8 @@
-require('dotenv').config();
+const { isLocalDevelopment } = require('./config/env');
+
+if (isLocalDevelopment()) {
+  require('dotenv').config();
+}
 
 const express = require('express');
 const path = require('path');

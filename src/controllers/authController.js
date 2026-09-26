@@ -1,9 +1,9 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const { getEnv } = require('../config/env');
 
-// Helper function to sign JWT token
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET || 'typingmastersecretkey', {
+  return jwt.sign({ id }, getEnv('JWT_SECRET') || 'typingmastersecretkey', {
     expiresIn: '1d'
   });
 };

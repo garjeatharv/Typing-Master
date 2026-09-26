@@ -1,15 +1,8 @@
 const mongoose = require('mongoose');
-
-function isServerlessRuntime() {
-  return Boolean(
-    process.env.NETLIFY ||
-    process.env.AWS_LAMBDA_FUNCTION_NAME ||
-    process.env.LAMBDA_TASK_ROOT
-  );
-}
+const { getEnv, isServerlessRuntime, isLocalDevelopment } = require('./env');
 
 function mustUseRemoteDatabase() {
-  return process.env.NODE_ENV === 'production' || isServerlessRuntime();
+  return getEnv('NODE_ENV') === 'production' || isServerlessRuntime();
 }
 
 function assertProductionEnv() {
@@ -18,10 +11,10 @@ function assertProductionEnv() {
   }
 
   const missing = [];
-  if (!process.env.MONGODB_URI?.trim()) {
+  if (!getEnv('MONGODB_URI')?.trim()) {
     missing.push('MONGODB_URI');
   }
-  if (!process.env.JWT_SECRET?.trim()) {
+  if (!getEnv('JWT_SECRET')?.trim()) {
     missing.push('JWT_SECRET');
   }
 
@@ -31,7 +24,7 @@ function assertProductionEnv() {
 
   const err = new Error(
     `Missing required environment variable(s): ${missing.join(', ')}. ` +
-      'In Netlify: Site configuration → Environment variables → add them, then redeploy.'
+      'In Netlify: Site configuration → Environment variables → add them for all scopes, then redeploy.'
   );
   err.code = 'MISSING_ENV';
   err.missingEnv = missing;
@@ -41,21 +34,31 @@ function assertProductionEnv() {
 function getMongoUri() {
   assertProductionEnv();
 
-  const uri = process.env.MONGODB_URI?.trim();
+  const uri = getEnv('MONGODB_URI')?.trim();
   if (uri) {
+    if (
+      mustUseRemoteDatabase() &&
+      (uri.includes('127.0.0.1') || uri.includes('localhost'))
+    ) {
+      const err = new Error(
+        'MONGODB_URI points to localhost. On Netlify use your MongoDB Atlas mongodb+srv:// connection string.'
+      );
+      err.code = 'INVALID_MONGODB_URI';
+      throw err;
+    }
     return uri;
   }
 
-  if (mustUseRemoteDatabase()) {
-    const err = new Error(
-      'MONGODB_URI is not set. Netlify cannot use localhost MongoDB. ' +
-        'Create a free MongoDB Atlas cluster and paste the connection string into Netlify env vars.'
-    );
-    err.code = 'MISSING_MONGODB_URI';
-    throw err;
+  if (isLocalDevelopment()) {
+    return 'mongodb://127.0.0.1:27017/LoginFormPractice';
   }
 
-  return 'mongodb://127.0.0.1:27017/LoginFormPractice';
+  const err = new Error(
+    'MONGODB_URI is not set. Netlify cannot use localhost MongoDB. ' +
+      'Add your Atlas connection string under Site configuration → Environment variables, then trigger a new deploy.'
+  );
+  err.code = 'MISSING_MONGODB_URI';
+  throw err;
 }
 
 let cached = global.mongooseCache;
