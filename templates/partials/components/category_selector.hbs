@@ -1,0 +1,11 @@
+<div class="settings-block" data-component="category-selector">
+  <span class="settings-block__label" id="category-selector-label">Category</span>
+  <div class="chip-group" role="radiogroup" aria-labelledby="category-selector-label">
+    {{#each categories}}
+      <label class="chip">
+        <input type="radio" name="category" value="{{this}}" class="chip__input" {{#if @first}}checked{{/if}}>
+        <span class="chip__text">{{this}}</span>
+      </label>
+    {{/each}}
+  </div>
+</div>

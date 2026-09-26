@@ -2,26 +2,37 @@ const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/auth');
 
-// Protected Home view - only authenticated users can access
+const { SESSION_CATEGORIES } = require('../constants/categories');
+
 router.get('/', protect, (req, res) => {
-  res.render('home', { naming: req.user.name });
+  res.render('home', {
+    naming: req.user.name,
+    pageTitle: 'Practice',
+    navActive: 'practice',
+    categories: SESSION_CATEGORIES,
+  });
 });
 
-// Login view
+router.get('/stats', protect, (req, res) => {
+  res.render('stats', {
+    naming: req.user.name,
+    pageTitle: 'Your Stats',
+    navActive: 'stats',
+  });
+});
+
 router.get('/login', (req, res) => {
-  // If user is already logged in, redirect them to the home page
   if (req.cookies && req.cookies.token) {
     return res.redirect('/');
   }
-  res.render('login', { pageTitle: 'LogIn' });
+  res.render('login', { pageTitle: 'Log In' });
 });
 
-// Signup view
 router.get('/signup', (req, res) => {
   if (req.cookies && req.cookies.token) {
     return res.redirect('/');
   }
-  res.render('signup');
+  res.render('signup', { pageTitle: 'Sign Up' });
 });
 
 module.exports = router;

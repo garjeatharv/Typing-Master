@@ -1,20 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <link rel="stylesheet" href="./login.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ pageTitle }} · TypingMaster</title>
+  <link rel="stylesheet" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/app.css">
+  <link rel="stylesheet" href="/login.css">
 </head>
 <body>
-    <div class="container">
-        <h2>Login</h2>
-        <form action="/login" method="post">
-            <input type="text" name="name" placeholder="Name" value="{{naming}}" >
-            <input type="password" name="password" placeholder="Password">
-            <input type="submit" value="Submit">
-        </form>
-        <a href="signup">Create a new account</a>
+  <main class="auth-container">
+    <div class="auth-card">
+      <h1>Log in</h1>
+      <p class="auth-subtitle">Continue your typing progress</p>
+      <form id="login-form" novalidate>
+        <input type="text" name="name" placeholder="Username" autocomplete="username" required>
+        <input type="password" name="password" placeholder="Password" autocomplete="current-password" required>
+        <input type="submit" value="Log in">
+      </form>
+      <p class="auth-footer"><a href="/signup">Create an account</a></p>
     </div>
+  </main>
+  <script src="/js/core/http.js"></script>
+  <script src="/login.js"></script>
 </body>
 </html>

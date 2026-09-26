@@ -1,0 +1,6 @@
+{
+  "watch": ["src", "templates", "public"],
+  "ext": "js,hbs,css,json",
+  "ignore": ["node_modules", "tests"],
+  "exec": "node src/index.js"
+}

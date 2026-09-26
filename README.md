@@ -1,31 +1,71 @@
-**TypingMaster**
+# TypingMaster
 
-Welcome to TypingMaster, a fun and interactive typing practice website! Whether you're a seasoned typist looking to sharpen your skills or a beginner aiming to improve your typing speed and accuracy, TypingMaster is here to help.
+Interactive typing practice with accounts, saved sessions, word-count and timed tests, and a personal stats dashboard.
 
-**Features:**
-- Choose from a diverse range of typing exercises, including random words, coding terms, common things, animals, and more.
-- Engage in typing challenges with a customizable word count to suit your preference.
-- Practice with a variety of categories, such as Animals, Coding, Things, and Places, to keep your typing sessions fresh and enjoyable.
-- Toggle the "Caps Lock" switch to change the case of letters and challenge yourself further.
-- View your typing speed in real-time as you progress through each exercise.
-- Get instant feedback on your typing accuracy and track your improvement over time.
-- Access a user-friendly interface with a clean design, making your typing experience smooth and distraction-free.
-- Mobile-friendly design, allowing you to practice typing on the go.
+## Features
 
-**How to Use:**
-1. Choose a category from Animals, Coding, Things, or Places.
-2. Click on the "Start" button to begin the typing challenge.
-3. Type the displayed words accurately and see them change case according to the "Caps Lock" toggle.
-4. Track your progress, typing speed, and accuracy as you complete each exercise.
-5. Challenge yourself with different word counts and categories to enhance your typing skills.
+- JWT auth with httpOnly cookies (signup, login, logout)
+- Word lists by category from MongoDB (Coding, Animals, Things, Places)
+- **Word count** tests (3–100 words) and **30s / 60s** timed tests
+- Live WPM and accuracy while typing
+- Session history and aggregate stats (best WPM, averages)
+- Docker and GitHub Actions CI
 
-**Why Choose TypingMaster:**
-- Improve your typing speed and accuracy at your own pace.
-- Engage in fun and varied typing exercises to keep motivation high.
-- Suitable for all levels, from beginners to experienced typists.
-- Clean and user-friendly design for a seamless typing experience.
-- Mobile accessibility for convenient practice on any device.
+## Quick start (local)
 
-Enhance your typing skills today and become a typing master with TypingMaster! Let's type our way to success together.
+1. Copy environment file:
 
-Feel free to contribute, suggest improvements, and share the love for typing with the world. Happy typing! 🚀
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Install and seed (requires MongoDB running locally):
+
+   ```bash
+   npm install
+   npm run seed
+   npm run dev
+   ```
+
+3. Open [http://localhost:3000](http://localhost:3000), sign up, and start a test.
+
+## Theming
+
+Edit colors in [`public/css/theme.css`](public/css/theme.css). Other stylesheets use CSS variables from that file.
+
+## Scripts
+
+| Script | Description |
+|--------|-------------|
+| `npm start` | Run production server |
+| `npm run dev` | Run with nodemon (hot reload on `src/`, `templates/`, `public/`) |
+| `npm run seed` | Populate word categories |
+| `npm test` | Unit + API tests |
+
+## Docker
+
+```bash
+docker compose up --build
+```
+
+Then seed words inside the app container (one time):
+
+```bash
+docker compose exec app npm run seed
+```
+
+## Environment
+
+| Variable | Description |
+|----------|-------------|
+| `PORT` | HTTP port (default `3000`) |
+| `MONGODB_URI` | Mongo connection string |
+| `JWT_SECRET` | Secret for signing auth tokens |
+| `NODE_ENV` | `development` or `production` |
+
+## Project layout
+
+- `src/` — Express app, routes, services, models
+- `public/` — Static assets and client typing engine
+- `templates/` — Handlebars views
+- `tests/` — Node test runner + Supertest

@@ -1,0 +1,235 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;800&family=Roboto+Mono:wght@400;500&display=swap');
+@import url('./theme.css');
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, Verdana, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.app-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1.25rem;
+  background: #111;
+  border-bottom: 1px solid var(--border);
+}
+
+.app-nav__brand {
+  color: var(--text);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.app-nav__links {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.app-nav__link {
+  color: var(--muted);
+  text-decoration: none;
+  padding: 0.35rem 0.5rem;
+  border-radius: 6px;
+}
+
+.app-nav__link.is-active,
+.app-nav__link:hover {
+  color: var(--text);
+  background: var(--accent-soft);
+}
+
+.app-nav__user {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.app-nav__logout {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+  cursor: pointer;
+}
+
+.app-nav__logout:hover {
+  border-color: var(--border-strong);
+  color: var(--accent-hover);
+}
+
+.auth-container {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.auth-card {
+  width: min(420px, 100%);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.75rem;
+  box-shadow: var(--shadow-lg);
+}
+
+.auth-card h1 {
+  margin: 0 0 0.35rem;
+}
+
+.auth-subtitle {
+  margin: 0 0 1rem;
+  color: var(--muted);
+}
+
+.auth-card form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.auth-card input[type='text'],
+.auth-card input[type='password'] {
+  width: 100%;
+  padding: 0.75rem 0.85rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #151515;
+  color: var(--text);
+}
+
+.auth-card input[type='submit'] {
+  border-radius: 999px;
+  padding: 0.75rem 1rem;
+  background: var(--accent-soft);
+  color: var(--text);
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid var(--border-strong);
+}
+
+.auth-card input[type='submit']:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.auth-footer {
+  margin: 1rem 0 0;
+  text-align: center;
+}
+
+.auth-footer a {
+  color: var(--accent);
+  text-decoration-color: var(--border-strong);
+}
+
+.error-message {
+  color: var(--error-text);
+  font-weight: 600;
+  text-align: center;
+}
+
+.btn-primary,
+.btn-secondary {
+  border: none;
+  border-radius: 999px;
+  padding: 0.65rem 1.1rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-primary {
+  display: inline-block;
+  background: var(--accent-soft);
+  color: var(--text);
+  text-decoration: none;
+  border: 1px solid var(--border-strong);
+}
+
+.btn-primary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  margin-left: 0.5rem;
+}
+
+.live-stats {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  color: var(--muted);
+}
+
+.live-stats strong {
+  color: var(--text);
+}
+
+.section-label {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.mode-fieldset,
+.radio-container {
+  border: none;
+  margin: 1rem 0;
+}
+
+.message {
+  min-height: 1.5rem;
+}
+
+.quote {
+  min-height: 3rem;
+}
+
+.highlight.error-highlight {
+  background: rgba(240, 138, 138, 0.2);
+}
+
+@media (max-width: 640px) {
+  .app-nav {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .shortcut-hint {
+    display: none;
+  }
+}
+
+.shortcut-hint {
+  margin-left: 0.35rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+  vertical-align: middle;
+}
+
+.shortcut-hint--btn {
+  margin-left: 0.5rem;
+  font-size: 0.58rem;
+}
+
+.app-nav__link .shortcut-hint {
+  margin-left: 0.25rem;
+}

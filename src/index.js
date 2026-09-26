@@ -1,78 +1,84 @@
-const express = require("express");
-const path = require("path");
+require('dotenv').config();
+
+const express = require('express');
+const path = require('path');
+const fs = require('fs');
+const cookieParser = require('cookie-parser');
+
+const hbs = require('hbs');
+
+const connectDB = require('./config/db');
+const { notFound, errorHandler } = require('./middleware/errorHandler');
+
+const viewRoutes = require('./routes/viewRoutes');
+const authRoutes = require('./routes/authRoutes');
+const wordRoutes = require('./routes/wordRoutes');
+const sessionRoutes = require('./routes/sessionRoutes');
+
 const app = express();
-// const hbs = require("hbs")
-const LogInCollection = require("./mongodb");
 const port = process.env.PORT || 3000;
-app.use(express.json());
-app.use(express.static("src"));
 
+const partialsPath = path.join(__dirname, '../templates/partials');
+
+function registerAllPartials() {
+  return new Promise((resolve, reject) => {
+    hbs.registerPartials(partialsPath, (err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
+}
+
+const partialsReady = registerAllPartials();
+
+if (process.env.NODE_ENV !== 'production') {
+  let reloadTimer;
+  try {
+    fs.watch(partialsPath, { recursive: true }, () => {
+      clearTimeout(reloadTimer);
+      reloadTimer = setTimeout(() => {
+        registerAllPartials().catch((err) => {
+          console.error('Failed to reload Handlebars partials:', err.message);
+        });
+      }, 150);
+    });
+  } catch (err) {
+    console.warn('Handlebars partial watch unavailable:', err.message);
+  }
+}
+
+const dbReady = connectDB();
+const appReady = Promise.all([dbReady, partialsReady]);
+
+app.use(express.json({ limit: '16kb' }));
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
-const tempelatePath = path.join(__dirname, "../templates");
-const publicPath = path.join(__dirname, "../public");
+app.set('view engine', 'hbs');
+app.set('views', path.join(__dirname, '../templates'));
+hbs.registerHelper('eq', (a, b) => a === b);
+app.use(express.static(path.join(__dirname, '../public')));
 
-app.set("view engine", "hbs");
-app.set("views", tempelatePath);
-app.use(express.static(publicPath));
+app.use('/', viewRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/words', wordRoutes);
+app.use('/api/sessions', sessionRoutes);
 
+app.use(notFound);
+app.use(errorHandler);
 
-app.get("/signup", (req, res) => {
-  res.render("signup");
-});
-app.get("/", (req, res) => {
-  res.render("login",{pageTitle:'LogIn'});
-});
-app.get("/login", (req, res) => {
-  res.render("login",{pageTitle:'LogIn'});
-});
+if (require.main === module) {
+  appReady
+    .then(() => {
+      app.listen(port, () => {
+        console.log(`TypingMaster listening on http://localhost:${port}`);
+      });
+    })
+    .catch((err) => {
+      console.error(err);
+      process.exit(1);
+    });
+}
 
-app.get("/*",(req,res)=>{
-  res.render("pageNotFount")
-})
-
-
-app.post("/signup", async (req, res) => {
-
-  const data = {
-    name: req.body.name,
-    password: req.body.password,
-  };
-
-  const checking = await LogInCollection.findOne({ name: req.body.name });
-
-  try {
-    if ( checking
-    //   checking.name === req.body.name &&
-    //   checking.password === req.body.password
-    ) {
-      res.send("user details already exists");
-    } else {
-      await LogInCollection.insertMany([data]);
-    }
-  } catch(error) {
-    res.send("wrong inputs, error is :",error);
-  }
-
-  res.status(201).render("login", {naming: `${req.body.name}`});
-});
-
-app.post("/login", async (req, res) => {
-  try {
-    const check = await LogInCollection.findOne({ name: req.body.name });
-
-    if (check.password === req.body.password) {
-      // res.status(201).render("home", { naming: `${req.body.password}+${req.body.name}` });
-      res.status(201).render("home", { naming: `${req.body.name}`, pas :`${req.body.password}` });
-    } else {
-      res.send("incorrect password");
-    }
-  } catch (e) {
-    res.send("wrong details");
-  }
-});
-
-
-app.listen(port, () => {
-  console.log("port connected");
-});
+module.exports = app;
+module.exports.dbReady = appReady;

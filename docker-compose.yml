@@ -1,0 +1,21 @@
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/LoginFormPractice
+      JWT_SECRET: ${JWT_SECRET:-dev-docker-secret}
+      NODE_ENV: production
+    depends_on:
+      - mongo
+
+volumes:
+  mongo_data:

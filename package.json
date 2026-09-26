@@ -1,19 +1,27 @@
 {
-  "name": "mongo-reg-form",
-  "version": "1.0.0",
-  "description": "",
-  "main": "app.js",
+  "name": "typing-master",
+  "version": "2.0.0",
+  "description": "TypingMaster — typing practice with auth, stats, and timed tests",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start" : "node src\\index.js"
+    "start": "node src/index.js",
+    "dev": "nodemon",
+    "seed": "node src/scripts/seed.js",
+    "test": "node --test tests"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["typing", "express", "mongodb"],
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
     "hbs": "^4.2.0",
-    "mongoose": "^7.3.1",
-    "nodemon": "^2.0.22"
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^7.8.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22",
+    "supertest": "^7.0.0"
   }
 }

@@ -1,76 +1,54 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const form = document.querySelector('form');
+  const form = document.getElementById('signup-form') || document.querySelector('form');
+  if (!form) return;
+
   const errorDiv = document.createElement('div');
   errorDiv.className = 'error-message';
-  errorDiv.style.color = '#ff4a4a';
-  errorDiv.style.marginBottom = '15px';
-  errorDiv.style.textAlign = 'center';
-  errorDiv.style.fontWeight = 'bold';
   errorDiv.style.display = 'none';
+  form.insertBefore(errorDiv, form.firstChild);
 
-  if (form) {
-    form.insertBefore(errorDiv, form.firstChild);
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorDiv.style.display = 'none';
+    errorDiv.textContent = '';
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+    const name = form.name.value.trim();
+    const password = form.password.value;
 
-      // Reset error state
-      errorDiv.style.display = 'none';
-      errorDiv.textContent = '';
+    if (!name || !password) {
+      errorDiv.textContent = 'Please fill in all fields';
+      errorDiv.style.display = 'block';
+      return;
+    }
 
-      const name = form.name.value.trim();
-      const password = form.password.value;
+    if (name.length < 2) {
+      errorDiv.textContent = 'Username must be at least 2 characters';
+      errorDiv.style.display = 'block';
+      return;
+    }
 
-      if (!name || !password) {
-        errorDiv.textContent = 'Please fill in all fields';
-        errorDiv.style.display = 'block';
-        return;
-      }
+    if (password.length < 4) {
+      errorDiv.textContent = 'Password must be at least 4 characters';
+      errorDiv.style.display = 'block';
+      return;
+    }
 
-      if (name.length < 2) {
-        errorDiv.textContent = 'Username must be at least 2 characters long';
-        errorDiv.style.display = 'block';
-        return;
-      }
+    const submitBtn = form.querySelector('input[type="submit"]');
+    const original = submitBtn.value;
+    submitBtn.value = 'Creating account…';
+    submitBtn.disabled = true;
 
-      if (password.length < 4) {
-        errorDiv.textContent = 'Password must be at least 4 characters long';
-        errorDiv.style.display = 'block';
-        return;
-      }
-
-      const submitBtn = form.querySelector('input[type="submit"]');
-      const originalBtnValue = submitBtn.value;
-      submitBtn.value = 'Creating Account...';
-      submitBtn.disabled = true;
-
-      try {
-        const response = await fetch('/api/auth/signup', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ name, password })
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-          // Redirect to home page on successful account creation
-          window.location.href = '/';
-        } else {
-          errorDiv.textContent = data.message || 'Signup failed';
-          errorDiv.style.display = 'block';
-          submitBtn.value = originalBtnValue;
-          submitBtn.disabled = false;
-        }
-      } catch (err) {
-        console.error('Signup error:', err);
-        errorDiv.textContent = 'Connection failed. Please check if server is running.';
-        errorDiv.style.display = 'block';
-        submitBtn.value = originalBtnValue;
-        submitBtn.disabled = false;
-      }
-    });
-  }
+    try {
+      await TM.request('/api/auth/signup', {
+        method: 'POST',
+        body: JSON.stringify({ name, password }),
+      });
+      window.location.href = '/';
+    } catch (err) {
+      errorDiv.textContent = err.message || 'Signup failed';
+      errorDiv.style.display = 'block';
+      submitBtn.value = original;
+      submitBtn.disabled = false;
+    }
+  });
 });

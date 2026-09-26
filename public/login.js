@@ -1,65 +1,42 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const form = document.querySelector('form');
+  const form = document.getElementById('login-form') || document.querySelector('form');
+  if (!form) return;
+
   const errorDiv = document.createElement('div');
   errorDiv.className = 'error-message';
-  errorDiv.style.color = '#ff4a4a';
-  errorDiv.style.marginBottom = '15px';
-  errorDiv.style.textAlign = 'center';
-  errorDiv.style.fontWeight = 'bold';
   errorDiv.style.display = 'none';
+  form.insertBefore(errorDiv, form.firstChild);
 
-  // Insert error element at the top of the form
-  if (form) {
-    form.insertBefore(errorDiv, form.firstChild);
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorDiv.style.display = 'none';
+    errorDiv.textContent = '';
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+    const name = form.name.value.trim();
+    const password = form.password.value;
 
-      // Reset error state
-      errorDiv.style.display = 'none';
-      errorDiv.textContent = '';
+    if (!name || !password) {
+      errorDiv.textContent = 'Please fill in all fields';
+      errorDiv.style.display = 'block';
+      return;
+    }
 
-      const name = form.name.value.trim();
-      const password = form.password.value;
+    const submitBtn = form.querySelector('input[type="submit"]');
+    const original = submitBtn.value;
+    submitBtn.value = 'Connecting…';
+    submitBtn.disabled = true;
 
-      if (!name || !password) {
-        errorDiv.textContent = 'Please fill in all fields';
-        errorDiv.style.display = 'block';
-        return;
-      }
-
-      const submitBtn = form.querySelector('input[type="submit"]');
-      const originalBtnValue = submitBtn.value;
-      submitBtn.value = 'Connecting...';
-      submitBtn.disabled = true;
-
-      try {
-        const response = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ name, password })
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-          // Redirect to home page on successful authentication
-          window.location.href = '/';
-        } else {
-          errorDiv.textContent = data.message || 'Invalid username or password';
-          errorDiv.style.display = 'block';
-          submitBtn.value = originalBtnValue;
-          submitBtn.disabled = false;
-        }
-      } catch (err) {
-        console.error('Login error:', err);
-        errorDiv.textContent = 'Connection failed. Please check if server is running.';
-        errorDiv.style.display = 'block';
-        submitBtn.value = originalBtnValue;
-        submitBtn.disabled = false;
-      }
-    });
-  }
+    try {
+      await TM.request('/api/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ name, password }),
+      });
+      window.location.href = '/';
+    } catch (err) {
+      errorDiv.textContent = err.message || 'Invalid username or password';
+      errorDiv.style.display = 'block';
+      submitBtn.value = original;
+      submitBtn.disabled = false;
+    }
+  });
 });

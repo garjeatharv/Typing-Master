@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ pageTitle }} · TypingMaster</title>
+  <link rel="stylesheet" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/app.css">
+  <link rel="stylesheet" href="/stats.css">
+</head>
+<body>
+  {{> app_nav }}
+  <main class="container stats-page">
+    <h1>Your progress</h1>
+    <p class="stats-intro">Track improvement across sessions. Hover chart points for details.</p>
+
+    <div class="stats-grid" id="stats-summary">
+      <div class="stat-card"><span class="stat-label">Sessions</span><span class="stat-value" id="stat-sessions">—</span></div>
+      <div class="stat-card"><span class="stat-label">Best WPM</span><span class="stat-value" id="stat-best-wpm">—</span></div>
+      <div class="stat-card"><span class="stat-label">Avg WPM</span><span class="stat-value" id="stat-avg-wpm">—</span></div>
+      <div class="stat-card"><span class="stat-label">Avg accuracy</span><span class="stat-value" id="stat-avg-accuracy">—</span></div>
+    </div>
+
+    <section class="stats-chart-section" aria-labelledby="recent-heading">
+      <div class="stats-chart-section__header">
+        <h2 id="recent-heading">Recent tests</h2>
+        <p class="stats-chart-hint">WPM trend · hover for full result</p>
+      </div>
+      <div class="session-chart-shell">
+        <div id="session-chart" class="session-chart" role="img" aria-label="WPM trend for recent typing tests"></div>
+        <div id="session-chart-tooltip" class="session-chart-tooltip" hidden role="tooltip"></div>
+      </div>
+      <div class="table-wrap">
+        <table class="sessions-table">
+          <thead>
+            <tr>
+              <th>When</th>
+              <th>Mode</th>
+              <th>Category</th>
+              <th>WPM</th>
+              <th>Accuracy</th>
+              <th>Words</th>
+            </tr>
+          </thead>
+          <tbody id="sessions-body">
+            <tr><td colspan="6" class="empty-row">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <nav class="sessions-pagination" id="sessions-pagination" aria-label="Results pages" hidden></nav>
+    </section>
+
+    <p class="stats-actions"><a href="/" class="btn-primary">Back to practice</a></p>
+  </main>
+
+  <script src="/js/core/http.js"></script>
+  <script src="/js/core/session-format.js"></script>
+  <script src="/js/core/keyboard-helpers.js"></script>
+  <script src="/js/components/session-chart.js"></script>
+  <script src="/js/keyboard-shortcuts.js"></script>
+  <script src="/js/app-nav.js"></script>
+  <script src="/js/stats-page.js"></script>
+</body>
+</html>

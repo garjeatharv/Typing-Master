@@ -1,0 +1,24 @@
+/**
+ * TypingMaster design tokens — edit colors here only.
+ */
+:root {
+  --bg: #0f0f0f;
+  --surface: #171717;
+  --surface-raised: #1f1f1f;
+  --text: #e8e8e8;
+  --muted: #888888;
+  --accent: #d0d0d0;
+  --accent-hover: #ffffff;
+  --accent-soft: rgba(255, 255, 255, 0.06);
+  --accent-line: rgba(255, 255, 255, 0.22);
+  --border: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.18);
+  --typing-done: #dddddd;
+  --typing-pending: #4a4a4a;
+  --typing-wrong: #a86a6a;
+  --error-text: #c97a7a;
+  --chart-bar: rgba(255, 255, 255, 0.18);
+  --chart-bar-active: rgba(255, 255, 255, 0.42);
+  --slider-accent: #aaaaaa;
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.35);
+}

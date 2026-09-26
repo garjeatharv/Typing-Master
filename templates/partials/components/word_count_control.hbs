@@ -1,0 +1,25 @@
+<div class="settings-block settings-block--word-count" id="word-count-row" data-component="word-count">
+  <div class="settings-block__row">
+    <label class="settings-block__label" for="word-count-input">Word count</label>
+    <output class="settings-block__value" id="word-count-value" for="word-count-slider word-count-input">20</output>
+  </div>
+  <input
+    type="range"
+    class="word-count__slider"
+    id="word-count-slider"
+    min="3"
+    max="100"
+    value="20"
+    aria-label="Word count slider"
+  >
+  <input
+    type="number"
+    class="word-count__number"
+    id="word-count-input"
+    min="3"
+    max="100"
+    value="20"
+    inputmode="numeric"
+    aria-label="Number of words"
+  >
+</div>

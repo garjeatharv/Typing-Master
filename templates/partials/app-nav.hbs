@@ -1,0 +1,13 @@
+<nav class="app-nav" aria-label="Main">
+  <a class="app-nav__brand" href="/">TypingMaster</a>
+  <div class="app-nav__links">
+    <a href="/" id="nav-practice" class="app-nav__link{{#if (eq navActive 'practice')}} is-active{{/if}}">
+      Practice<span class="shortcut-hint" aria-label="Shortcut Control Shift P">Ctrl+Shift+P</span>
+    </a>
+    <a href="/stats" id="nav-stats" class="app-nav__link{{#if (eq navActive 'stats')}} is-active{{/if}}">
+      Stats<span class="shortcut-hint" aria-label="Shortcut Control Shift S">Ctrl+Shift+S</span>
+    </a>
+    <span class="app-nav__user">{{ naming }}</span>
+    <button type="button" id="logout-btn" class="app-nav__logout">Log out</button>
+  </div>
+</nav>
