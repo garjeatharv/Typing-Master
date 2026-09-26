@@ -1,8 +1,15 @@
 const serverless = require('serverless-http');
-const app = require('../../src/index');
 
+let appModule;
 let server;
 let initError;
+
+function loadApp() {
+  if (!appModule) {
+    appModule = require('../../src/index');
+  }
+  return appModule;
+}
 
 function configurationHelpPage(error) {
   const isMissingEnv =
@@ -17,7 +24,10 @@ function configurationHelpPage(error) {
       ? 'Cannot reach MongoDB'
       : 'Server startup failed';
 
-  const detail = error.message || 'Unknown error';
+  const detail = String(error.message || 'Unknown error')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -39,25 +49,25 @@ function configurationHelpPage(error) {
   <main>
     <h1>${title}</h1>
     <div class="box"><strong>Details:</strong> ${detail}</div>
-    <p>To run TypingMaster on Netlify you need a cloud MongoDB (Atlas) and env vars:</p>
+    <p>Netlify needs Atlas and two environment variables:</p>
     <ol>
-      <li>Create a free cluster at <a href="https://www.mongodb.com/cloud/atlas/register" style="color:#7eb8ff">MongoDB Atlas</a>.</li>
-      <li>Database Access → create a user with password.</li>
-      <li>Network Access → <strong>Add IP Address</strong> → <code>0.0.0.0/0</code> (allow Netlify).</li>
-      <li>Connect → Drivers → copy URI (looks like <code>mongodb+srv://...</code>).</li>
-      <li>Netlify → <strong>Site configuration → Environment variables</strong>:
-        <ul>
-          <li><code>MONGODB_URI</code> = your Atlas URI (replace <code>&lt;password&gt;</code>)</li>
-          <li><code>JWT_SECRET</code> = long random string (not copied from this repo)</li>
-        </ul>
-      </li>
-      <li>Scope: set both variables for <strong>All scopes</strong> (or at least Production + Functions).</li>
-      <li><strong>Deploys → Trigger deploy</strong> (required after changing env vars).</li>
+      <li><code>MONGODB_URI</code> — Atlas <code>mongodb+srv://...</code> (all scopes)</li>
+      <li><code>JWT_SECRET</code> — unique random string (all scopes)</li>
+      <li>Atlas Network Access → <code>0.0.0.0/0</code></li>
+      <li>Then <strong>Trigger deploy</strong> on Netlify</li>
     </ol>
-    <p>Word lists seed automatically on first successful connection.</p>
   </main>
 </body>
 </html>`;
+}
+
+function isConfigOrMongoError(error) {
+  return (
+    error.code === 'MISSING_ENV' ||
+    error.code === 'MISSING_MONGODB_URI' ||
+    error.code === 'INVALID_MONGODB_URI' ||
+    error.name === 'MongooseServerSelectionError'
+  );
 }
 
 async function getServer() {
@@ -69,7 +79,8 @@ async function getServer() {
   }
 
   try {
-    await app.dbReady;
+    const app = loadApp();
+    await app.bootstrapReady;
     server = serverless(app);
     return server;
   } catch (error) {
@@ -83,14 +94,22 @@ exports.handler = async (event, context) => {
 
   try {
     const handle = await getServer();
-    return handle(event, context);
+    return await handle(event, context);
   } catch (error) {
-    console.error('Netlify function startup failed:', error);
+    console.error('Netlify function error:', error);
+
+    if (isConfigOrMongoError(error)) {
+      return {
+        statusCode: 503,
+        headers: { 'Content-Type': 'text/html; charset=utf-8' },
+        body: configurationHelpPage(error),
+      };
+    }
 
     return {
-      statusCode: 503,
-      headers: { 'Content-Type': 'text/html; charset=utf-8' },
-      body: configurationHelpPage(error),
+      statusCode: 500,
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+      body: 'Internal server error. Check Netlify function logs.',
     };
   }
 };

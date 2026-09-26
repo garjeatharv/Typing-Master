@@ -3,15 +3,12 @@
   publish = "public"
   functions = "netlify/functions"
 
-  # Docs and defaults mention PORT/NODE_ENV; omit from scan (not real secrets).
-  # JWT_SECRET in Netlify must be a unique value that does not appear anywhere in this repo.
   [build.environment]
     SECRETS_SCAN_OMIT_KEYS = "NODE_ENV,PORT"
-    SECRETS_SCAN_OMIT_PATHS = ".env.example,README.md,Dockerfile,docker-compose.yml,src/index.js"
+    SECRETS_SCAN_OMIT_PATHS = "README.md,Dockerfile,docker-compose.yml,src/index.js"
 
 [functions]
-  node_bundler = "esbuild"
-  # Do not inline runtime secrets at build time (see src/config/env.js)
+  node_bundler = "zisi"
   external_node_modules = [
     "express",
     "hbs",
@@ -25,6 +22,7 @@
 
 [functions.server]
   timeout = 26
+  memory = 1024
 
 [[redirects]]
   from = "/*"

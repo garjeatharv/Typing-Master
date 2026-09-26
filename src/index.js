@@ -1,6 +1,6 @@
-const { isLocalDevelopment } = require('./config/env');
+const { isServerlessRuntime, isLocalDevelopment, getProjectRoot } = require('./config/env');
 
-if (isLocalDevelopment()) {
+if (!isServerlessRuntime()) {
   require('dotenv').config();
 }
 
@@ -22,7 +22,7 @@ const sessionRoutes = require('./routes/sessionRoutes');
 
 const app = express();
 const port = process.env.PORT || 3000;
-const projectRoot = path.join(__dirname, '..');
+const projectRoot = getProjectRoot();
 
 app.set('trust proxy', 1);
 
@@ -39,7 +39,7 @@ function registerAllPartials() {
 
 const partialsReady = registerAllPartials();
 
-if (process.env.NODE_ENV !== 'production') {
+if (isLocalDevelopment()) {
   let reloadTimer;
   try {
     fs.watch(partialsPath, { recursive: true }, () => {
@@ -55,8 +55,27 @@ if (process.env.NODE_ENV !== 'production') {
   }
 }
 
-const dbReady = connectDB().then(() => ensureWordsSeeded());
-const appReady = Promise.all([dbReady, partialsReady]);
+let databaseReadyPromise = null;
+
+function ensureDatabaseReady() {
+  if (!databaseReadyPromise) {
+    databaseReadyPromise = connectDB()
+      .then(() => ensureWordsSeeded())
+      .catch((err) => {
+        databaseReadyPromise = null;
+        throw err;
+      });
+  }
+  return databaseReadyPromise;
+}
+
+const dbReady = isServerlessRuntime()
+  ? partialsReady
+  : Promise.all([partialsReady, ensureDatabaseReady()]);
+
+dbReady.catch((err) => {
+  console.error('Application bootstrap error:', err.message);
+});
 
 app.use(express.json({ limit: '16kb' }));
 app.use(express.urlencoded({ extended: false }));
@@ -67,6 +86,15 @@ app.set('views', path.join(projectRoot, 'templates'));
 hbs.registerHelper('eq', (a, b) => a === b);
 app.use(express.static(path.join(projectRoot, 'public')));
 
+app.use(async (req, res, next) => {
+  try {
+    await ensureDatabaseReady();
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
 app.use('/', viewRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/words', wordRoutes);
@@ -76,7 +104,7 @@ app.use(notFound);
 app.use(errorHandler);
 
 if (require.main === module) {
-  appReady
+  Promise.all([partialsReady, ensureDatabaseReady()])
     .then(() => {
       app.listen(port, () => {
         console.log(`TypingMaster listening on http://localhost:${port}`);
@@ -89,4 +117,5 @@ if (require.main === module) {
 }
 
 module.exports = app;
-module.exports.dbReady = appReady;
+module.exports.bootstrapReady = partialsReady;
+module.exports.ensureDatabaseReady = ensureDatabaseReady;

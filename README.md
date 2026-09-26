@@ -13,13 +13,9 @@ Interactive typing practice with accounts, saved sessions, word-count and timed 
 
 ## Quick start (local)
 
-1. Copy environment file:
+1. Create a `.env` file in the project root (see [Environment](#environment) below). This file is gitignored—never commit it.
 
-   ```bash
-   cp .env.example .env
-   ```
-
-2. Install and seed (requires MongoDB running locally):
+2. Install and seed (requires MongoDB running locally, or use Atlas in `MONGODB_URI`):
 
    ```bash
    npm install
@@ -73,9 +69,16 @@ In **Site configuration → Environment variables**, add **only these two** (do 
 | Variable | Value |
 |----------|--------|
 | `MONGODB_URI` | Your full Atlas `mongodb+srv://...` string (set only in Netlify, never commit it) |
-| `JWT_SECRET` | A **new** long random string (32+ chars). Do **not** copy text from `.env.example` or the README. |
+| `JWT_SECRET` | A **new** long random string (32+ chars), unique to Netlify—not your local `.env` value if that was ever committed. |
 
 Netlify sets `NODE_ENV=production` automatically during builds.
+
+Run locally before pushing:
+
+```bash
+npm test
+npm run verify:netlify
+```
 
 Then **Deploys → Trigger deploy → Deploy site** (env changes do not apply until you redeploy).
 
@@ -83,9 +86,20 @@ Word categories **seed automatically** the first time the app connects to an emp
 
 If env vars are missing or Atlas blocks the connection, the site shows a **setup help page** instead of a generic function crash. Fix the variables above and redeploy.
 
-Local `netlify dev` still uses `.env` with a local MongoDB URI from `.env.example`.
+Local `netlify dev` reads from your gitignored `.env` in the project root.
 
 ## Environment
+
+Create `.env` in the project root (not committed to git):
+
+```env
+PORT=3000
+MONGODB_URI=mongodb://127.0.0.1:27017/LoginFormPractice
+JWT_SECRET=your-local-dev-secret
+NODE_ENV=development
+```
+
+For local dev with Atlas, set `MONGODB_URI` to your `mongodb+srv://...` string instead.
 
 | Variable | Description |
 |----------|-------------|

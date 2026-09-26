@@ -12,7 +12,8 @@ const Word = require('../src/models/Word');
 
 describe('API integration', () => {
   before(async () => {
-    await app.dbReady;
+    await app.bootstrapReady;
+    await app.ensureDatabaseReady();
     await mongoose.connection.db.dropDatabase();
   });
 
