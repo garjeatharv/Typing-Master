@@ -1,0 +1,25 @@
+[build]
+  command = "npm ci"
+  publish = "public"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = [
+    "express",
+    "hbs",
+    "mongoose",
+    "bcryptjs",
+    "jsonwebtoken",
+    "cookie-parser",
+    "serverless-http",
+  ]
+  included_files = ["templates/**", "public/**"]
+
+[functions.server]
+  timeout = 26
+
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/server/:splat"
+  status = 200

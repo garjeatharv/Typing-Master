@@ -17,8 +17,11 @@ const sessionRoutes = require('./routes/sessionRoutes');
 
 const app = express();
 const port = process.env.PORT || 3000;
+const projectRoot = path.join(__dirname, '..');
 
-const partialsPath = path.join(__dirname, '../templates/partials');
+app.set('trust proxy', 1);
+
+const partialsPath = path.join(projectRoot, 'templates/partials');
 
 function registerAllPartials() {
   return new Promise((resolve, reject) => {
@@ -55,9 +58,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.set('view engine', 'hbs');
-app.set('views', path.join(__dirname, '../templates'));
+app.set('views', path.join(projectRoot, 'templates'));
 hbs.registerHelper('eq', (a, b) => a === b);
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(path.join(projectRoot, 'public')));
 
 app.use('/', viewRoutes);
 app.use('/api/auth', authRoutes);

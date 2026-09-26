@@ -54,6 +54,28 @@ Then seed words inside the app container (one time):
 docker compose exec app npm run seed
 ```
 
+## Netlify
+
+This app is a **Node/Express server** (Handlebars + API routes), not a static site. Netlify runs it via a serverless function (`netlify/functions/server.js`). The repo includes `netlify.toml` so routes like `/` and `/login` are rewritten to that function instead of Netlify’s static 404 page.
+
+**Before the site works in production:**
+
+1. In [Netlify Site settings → Environment variables](https://docs.netlify.com/environment-variables/overview/), set:
+   - `MONGODB_URI` — use [MongoDB Atlas](https://www.mongodb.com/atlas) (Netlify cannot reach `localhost`)
+   - `JWT_SECRET` — a long random secret
+   - `NODE_ENV` — `production` (Netlify often sets this automatically)
+
+2. Seed word categories once against the same database (from your machine):
+
+   ```bash
+   set MONGODB_URI=your-atlas-connection-string
+   npm run seed
+   ```
+
+3. In **Site configuration → Build & deploy**, prefer settings from `netlify.toml` (build command `npm ci`, publish directory `public`, functions directory `netlify/functions`). Trigger **Deploy site** after pushing.
+
+4. Open the site root URL — you should see **Log In**, not Netlify’s generic “Page not found”.
+
 ## Environment
 
 | Variable | Description |
