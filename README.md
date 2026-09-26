@@ -56,25 +56,34 @@ docker compose exec app npm run seed
 
 ## Netlify
 
-This app is a **Node/Express server** (Handlebars + API routes), not a static site. Netlify runs it via a serverless function (`netlify/functions/server.js`). The repo includes `netlify.toml` so routes like `/` and `/login` are rewritten to that function instead of Netlify’s static 404 page.
+This app is a **Node/Express server** (Handlebars + API routes), not a static site. Netlify runs it via `netlify/functions/server.js`. **Netlify cannot connect to `127.0.0.1:27017`** — you must use [MongoDB Atlas](https://www.mongodb.com/cloud/atlas/register) (free tier is fine).
 
-**Before the site works in production:**
+### One-time Atlas setup
 
-1. In [Netlify Site settings → Environment variables](https://docs.netlify.com/environment-variables/overview/), set:
-   - `MONGODB_URI` — use [MongoDB Atlas](https://www.mongodb.com/atlas) (Netlify cannot reach `localhost`)
-   - `JWT_SECRET` — a long random secret
-   - `NODE_ENV` — `production` (Netlify often sets this automatically)
+1. Create a free **M0** cluster.
+2. **Database Access** → add a database user (remember username + password).
+3. **Network Access** → **Add IP Address** → allow **`0.0.0.0/0`** (required for Netlify serverless).
+4. **Connect** → **Drivers** → copy the connection string (`mongodb+srv://...`).
+5. Replace `<password>` in the URI with your user’s password (URL-encode special characters).
 
-2. Seed word categories once against the same database (from your machine):
+### Netlify environment variables
 
-   ```bash
-   set MONGODB_URI=your-atlas-connection-string
-   npm run seed
-   ```
+In **Site configuration → Environment variables**, add **only these two** (do not add `PORT` or `NODE_ENV` in Netlify—they trigger false positives in secrets scanning and are not required):
 
-3. In **Site configuration → Build & deploy**, prefer settings from `netlify.toml` (build command `npm ci`, publish directory `public`, functions directory `netlify/functions`). Trigger **Deploy site** after pushing.
+| Variable | Value |
+|----------|--------|
+| `MONGODB_URI` | Your full Atlas `mongodb+srv://...` string (set only in Netlify, never commit it) |
+| `JWT_SECRET` | A **new** long random string (32+ chars). Do **not** copy text from `.env.example` or the README. |
 
-4. Open the site root URL — you should see **Log In**, not Netlify’s generic “Page not found”.
+Netlify sets `NODE_ENV=production` automatically during builds.
+
+Then **Deploys → Trigger deploy → Deploy site** (env changes do not apply until you redeploy).
+
+Word categories **seed automatically** the first time the app connects to an empty database. You do not need to run `npm run seed` on Netlify if Atlas is configured correctly.
+
+If env vars are missing or Atlas blocks the connection, the site shows a **setup help page** instead of a generic function crash. Fix the variables above and redeploy.
+
+Local `netlify dev` still uses `.env` with a local MongoDB URI from `.env.example`.
 
 ## Environment
 

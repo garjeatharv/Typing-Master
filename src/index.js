@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser');
 const hbs = require('hbs');
 
 const connectDB = require('./config/db');
+const { ensureWordsSeeded } = require('./services/wordSeedService');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
 
 const viewRoutes = require('./routes/viewRoutes');
@@ -50,7 +51,7 @@ if (process.env.NODE_ENV !== 'production') {
   }
 }
 
-const dbReady = connectDB();
+const dbReady = connectDB().then(() => ensureWordsSeeded());
 const appReady = Promise.all([dbReady, partialsReady]);
 
 app.use(express.json({ limit: '16kb' }));
